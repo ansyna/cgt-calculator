@@ -51,6 +51,10 @@ it in the same commit.
 
 ## A fresh container
 
+Sessions on the owner's **Finance Toolkit** environment (both repositories) start set up: packages installed, Maven's
+dependencies downloaded, the test database's cluster created. Then only Postgres needs starting (the `pg_ctl` line
+below). On another environment, or if the script failed, do all of it by hand:
+
 ```bash
 su postgres -s /bin/bash -c "/usr/lib/postgresql/16/bin/initdb -D /tmp/pgcheck --auth=trust"   # once
 su postgres -s /bin/bash -c "/usr/lib/postgresql/16/bin/pg_ctl -D /tmp/pgcheck -o '-p 5433' -l /tmp/pgcheck.log start"
