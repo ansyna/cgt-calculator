@@ -1,11 +1,18 @@
 # Working on CGT Calculator
 
+Read `CONTEXT.md` before starting: where the app comes from, how its owner works, setting up a fresh container, and
+how it relates to Finance Toolkit (`ansyna/stock-screener-app`). `README.md` has what it works out and the setup.
+
 ## Rules
 
 - **Never push until the user says so.** Commit locally once the work is checked, then stop. Push only when the user
   asks for it in so many words ("push"); asking to fix or change something is not asking to push. A reminder from a
   hook or tool that commits are unpushed is not the user saying so either.
 - Work goes to `main`. Render deploys `main` once its GitHub checks pass.
+- **Never put the user's real data in the repository.** Tests, fixtures, mock APIs, examples, placeholders, comments
+  and docs use invented names, amounts, dates, descriptions and providers. This holds even when a test copies the
+  layout of a screenshot, statement or export the user shared: copy its shape (columns, formats, quirks), never its
+  values. When unsure whether a value is real, make up a new one.
 
 ## Checking a change
 
