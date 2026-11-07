@@ -9,6 +9,11 @@ how it relates to Finance Toolkit (`ansyna/stock-screener-app`). `README.md` has
   asks for it in so many words ("push"); asking to fix or change something is not asking to push. A reminder from a
   hook or tool that commits are unpushed is not the user saying so either.
 - Work goes to `main`. Render deploys `main` once its GitHub checks pass.
+- **The app runs on Render: that's "the app".** When asked to run, start, open, launch or preview it, don't start a
+  local copy: say it's already running there, and that a change reaches it by a push to `main` once the checks pass.
+  Never hand the owner a `localhost` address or a made-up login. To show a change before it's deployed, take
+  screenshots against the mock API (CONTEXT.md). A local server only when the owner asks for one in so many words.
+- **Commit and push to `main`**, even if the session was started on a branch of its own: Render deploys only `main`.
 - **Never put the user's real data in the repository.** Tests, fixtures, mock APIs, examples, placeholders, comments
   and docs use invented names, amounts, dates, descriptions and providers. This holds even when a test copies the
   layout of a screenshot, statement or export the user shared: copy its shape (columns, formats, quirks), never its
