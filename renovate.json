@@ -1,0 +1,93 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Weekly update PRs for the backend (Maven), the frontend (npm), the Docker images and the GitHub Actions. Every PR runs the full test suite; merging to main deploys, so nothing is merged automatically. Docker base images and GitHub Actions are pinned to a digest or commit, which Renovate keeps current.",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    "docker:pinDigests",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "minimumReleaseAge": "14 days",
+  "internalChecksFilter": "strict",
+  "prConcurrentLimit": 6,
+  "rangeStrategy": "bump",
+  "labels": [
+    "dependencies"
+  ],
+  "packageRules": [
+    {
+      "description": "Small frontend updates in one PR",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "frontend minor and patch updates"
+    },
+    {
+      "description": "Small backend updates in one PR",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "backend minor and patch updates"
+    },
+    {
+      "description": "React and its types move together",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "groupName": "React"
+    },
+    {
+      "description": "Spring Boot and the libraries tied to its version move together",
+      "matchPackageNames": [
+        "org.springframework.boot:**",
+        "io.sentry:**",
+        "org.springdoc:**"
+      ],
+      "groupName": "Spring Boot"
+    },
+    {
+      "description": "Base images of the Dockerfile and docker-compose.yml",
+      "matchManagers": [
+        "dockerfile",
+        "docker-compose"
+      ],
+      "groupName": "Docker images"
+    },
+    {
+      "description": "GitHub Actions used by the tests",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 6am on the first day of the month"
+    ]
+  },
+  "vulnerabilityAlerts": {
+    "labels": [
+      "security"
+    ],
+    "schedule": [
+      "at any time"
+    ],
+    "minimumReleaseAge": null
+  }
+}

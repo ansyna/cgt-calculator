@@ -1,0 +1,15 @@
+.git
+**/node_modules
+**/target
+**/dist
+backend/data
+backend/src/main/resources/static
+frontend/test-results
+frontend/playwright-report
+frontend/*.tsbuildinfo
+# secrets and local settings stay out of the image (Vite would also put VITE_* values from frontend/.env into the
+# public JavaScript)
+**/.env
+**/.env.*
+.github
+*.sql.gpg

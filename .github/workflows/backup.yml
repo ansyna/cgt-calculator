@@ -1,0 +1,69 @@
+# Monthly backup of the app's data (users, roles, pending links, the activity log, the share trades and settings). The app exports
+# it: /api/backup with the secret BACKUP_TOKEN. The SQL is
+# encrypted with BACKUP_PASSPHRASE before it is stored here as an artifact for 90 days. Restoring: README, "Backups".
+#
+# Needs the repository secrets (Settings → Secrets and variables → Actions):
+#   APP_URL            e.g. https://cgt-calculator-x1y2.onrender.com
+#   BACKUP_TOKEN       the value of BACKUP_TOKEN in the Render dashboard (Environment)
+#   BACKUP_PASSPHRASE  a long passphrase of your own; keep a copy outside GitHub, it is needed to restore
+name: Monthly backup
+
+on:
+  schedule:
+    # 03:17 UTC on the 1st of each month (not on the hour, when GitHub's schedules are busiest)
+    - cron: "17 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Back up the database
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check the secrets are set
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          BACKUP_TOKEN: ${{ secrets.BACKUP_TOKEN }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          missing=""
+          [ -n "$APP_URL" ] || missing="$missing APP_URL"
+          [ -n "$BACKUP_TOKEN" ] || missing="$missing BACKUP_TOKEN"
+          [ -n "$BACKUP_PASSPHRASE" ] || missing="$missing BACKUP_PASSPHRASE"
+          if [ -n "$missing" ]; then
+            echo "::error::Set the repository secrets:$missing (see the top of .github/workflows/backup.yml)"
+            exit 1
+          fi
+      - name: Download the data from the app
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          BACKUP_TOKEN: ${{ secrets.BACKUP_TOKEN }}
+        # Render's free plan sleeps when idle: the first request wakes it, which can take a minute
+        run: |
+          curl --fail --silent --show-error --location --max-time 240 --retry 4 --retry-delay 30 --retry-all-errors \
+            --header "X-Backup-Token: $BACKUP_TOKEN" --output backup.sql "${APP_URL%/}/api/backup"
+          tail -n 1 backup.sql | grep -qx "commit;" || { echo "::error::The backup is incomplete"; exit 1; }
+          echo "Rows: $(grep -c '^insert into' backup.sql), size: $(wc -c < backup.sql) bytes"
+      - name: Encrypt it
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          name="cgt-calculator-backup-$(date -u +%Y-%m-%d).sql.gpg"
+          gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 --symmetric --cipher-algo AES256 \
+            --output "$name" backup.sql <<< "$BACKUP_PASSPHRASE"
+          shred -u backup.sql
+          echo "NAME=$name" >> "$GITHUB_ENV"
+      - name: Keep it for 90 days (GitHub's longest)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ env.NAME }}
+          path: ${{ env.NAME }}
+          retention-days: 90
+          if-no-files-found: error

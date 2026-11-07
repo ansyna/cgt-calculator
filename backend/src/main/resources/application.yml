@@ -1,0 +1,137 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: cgt-calculator
+  # calls to Financial Modeling Prep: a hung response must not hold a page (or the others waiting for the same data)
+  http:
+    clients:
+      connect-timeout: 5s
+      read-timeout: 15s
+  datasource:
+    # H2 file database by default (in its PostgreSQL mode, so it runs the same migrations); production uses
+    # Postgres (the postgres profile), or point SPRING_DATASOURCE_* at one.
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/cgt-calculator;AUTO_SERVER=TRUE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  # email (password resets, invitations, confirmations): any SMTP account, e.g. Gmail with an app password
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 10000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
+  # The schema is changed only by the versioned scripts in db/migration, applied on start (Postgres, and H2 in its
+  # PostgreSQL mode).
+  flyway:
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      # check the entities against the migrated schema; never change it
+      ddl-auto: validate
+    open-in-view: false
+
+# Health checks for the host: /actuator/health (database included), /actuator/health/liveness and /readiness.
+# Health and info are public, without details; /actuator/metrics is for admins (Authorization: Bearer <token>).
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+  health:
+    # don't open an SMTP connection on every health check
+    mail:
+      enabled: false
+  info:
+    env:
+      enabled: true
+
+info:
+  commit: ${RENDER_GIT_COMMIT:}
+
+# Error reports go to Sentry when SENTRY_DSN is set (off otherwise). Nothing personal is sent: no IP addresses,
+# cookies or emails, and one-time tokens are masked.
+sentry:
+  dsn: ${SENTRY_DSN:}
+  environment: ${SENTRY_ENVIRONMENT:production}
+  release: ${RENDER_GIT_COMMIT:}
+  send-default-pii: false
+  # log lines at ERROR become reports; INFO and WARN lines are attached as the trail leading to them
+  logging:
+    minimum-event-level: error
+    minimum-breadcrumb-level: info
+  # the request id shown in error messages, searchable in Sentry
+  context-tags: requestId
+
+logging:
+  include-application-name: false
+  pattern:
+    # every line of a request carries its id
+    correlation: "%replace([%X{requestId}] ){'\\[\\] ', ''}"
+  # JSON lines instead: set LOGGING_STRUCTURED_FORMAT_CONSOLE=ecs (or logstash)
+
+app:
+  monitoring:
+    frontend-dsn: ${SENTRY_FRONTEND_DSN:${SENTRY_DSN:}}
+    environment: ${SENTRY_ENVIRONMENT:production}
+    release: ${RENDER_GIT_COMMIT:}
+  jwt:
+    # At least 32 characters. If empty, a random secret is generated at startup (tokens won't survive restarts).
+    secret: ${JWT_SECRET:}
+    # access tokens are short-lived; the login itself lasts app.account.refresh-days in an HttpOnly cookie
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:15}
+  admin:
+    # Bootstrap admin account, created on first start when no users exist.
+    name: ${ADMIN_NAME:Admin}
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+  contact-email: ${CONTACT_EMAIL:}
+  # Connections from these addresses are proxies, whose headers give the visitor's address and https
+  # (web.ClientAddressFilter). Render's apps sit behind Cloudflare: https://www.cloudflare.com/ips/
+  proxies:
+    trusted: [127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 100.64.0.0/10, "::1/128", "fc00::/7",
+              173.245.48.0/20, 103.21.244.0/22, 103.22.200.0/22, 103.31.4.0/22, 141.101.64.0/18, 108.162.192.0/18,
+              190.93.240.0/20, 188.114.96.0/20, 197.234.240.0/22, 198.41.128.0/17, 162.158.0.0/15, 104.16.0.0/13,
+              104.24.0.0/14, 172.64.0.0/13, 131.0.72.0/22, "2400:cb00::/32", "2606:4700::/32", "2803:f800::/32",
+              "2405:b500::/32", "2405:8100::/32", "2a06:98c0::/29", "2c0f:f248::/32"]
+    # people using Cloudflare's WARP VPN get these addresses: they are visitors, not proxies
+    not-trusted: [104.28.0.0/16]
+  # against scripts: what anyone can do without logging in (in memory, so a restart starts afresh)
+  # request bodies are at most 64 KB, except on these paths
+  request-size:
+    large-bodies:
+      # a CSV import's rows, up to 2,000 (CgtController)
+      "[/api/cgt/transactions/import]": 1MB
+  limits:
+    logins-per-address-per-minute: 20
+    sign-ups-per-address-per-hour: 5
+    reset-requests-per-address-per-hour: 10
+    # reset or confirmation links asked for one email address
+    emails-per-address-per-hour: 5
+    # no address gets more emails a day from the app, whatever the reason
+    emails-per-recipient-per-day: 10
+  # the monthly backup job sends this secret to /api/backup (at least 32 characters; empty: no backups)
+  backup:
+    token: ${BACKUP_TOKEN:}
+  account:
+    # public address for links in emails; Render sets RENDER_EXTERNAL_URL
+    base-url: ${APP_BASE_URL:${RENDER_EXTERNAL_URL:}}
+    mail-from: ${MAIL_FROM:${MAIL_USERNAME:}}
+    # HTTPS-only login cookie; set COOKIE_SECURE=false only when serving over plain http (not localhost)
+    cookie-secure: ${COOKIE_SECURE:true}
+    refresh-days: ${SESSION_DAYS:30}

@@ -1,0 +1,414 @@
+/* The CGT calculator's styles; the shared ones (layout, cards, tables, states) are in platform/styles.css. */
+
+.cgt-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px 16px;
+  align-items: start;
+}
+
+.cgt-wide {
+  grid-column: 1 / -1;
+}
+
+.cgt-kind {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  grid-column: 1 / -1;
+}
+
+.cgt-kind legend {
+  float: left;
+  width: auto;
+  margin: 0 8px 0 0;
+  font-size: inherit;
+}
+
+.cgt-kind label:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cgt-upper {
+  text-transform: uppercase;
+}
+
+.cgt-upper::placeholder {
+  text-transform: none;
+}
+
+.cgt-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cgt-row-actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cgt-figures th {
+  font-weight: 500;
+}
+
+.cgt-figures td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.cgt-gain {
+  color: var(--positive);
+  font-weight: 600;
+}
+
+.cgt-loss {
+  color: var(--negative);
+  font-weight: 600;
+}
+
+.cgt-matching summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.cgt-matching ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  min-width: 260px;
+}
+
+.cgt-note {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.cgt-about {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+}
+
+.cgt-about li + li {
+  margin-top: 6px;
+}
+
+.cgt-inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cgt-inline-form .form-label {
+  margin: 0;
+}
+
+.cgt-inline-form .form-control {
+  width: 160px;
+}
+
+.cgt-problems {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.cgt-problems ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+/* ---------- importing a statement ---------- */
+.cgt-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px 16px;
+  margin-top: 12px;
+}
+
+.cgt-summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.cgt-preview select {
+  min-width: 155px;
+}
+
+/* the statement's own words wrap instead of widening the table */
+.cgt-preview .cgt-statement {
+  white-space: normal;
+  min-width: 220px;
+  max-width: 340px;
+}
+
+.cgt-price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cgt-price input {
+  width: 96px;
+}
+
+.cgt-skipped td,
+.cgt-skipped th {
+  opacity: 0.55;
+}
+
+.cgt-attention th {
+  box-shadow: inset 3px 0 0 var(--negative);
+}
+
+.cgt-statement span {
+  display: block;
+}
+
+.cgt-row-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cgt-row-error {
+  font-size: 0.85rem;
+  color: var(--negative);
+}
+
+.cgt-done {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.cgt-rate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+.cgt-rate input {
+  width: 96px;
+}
+
+.cgt-nothing {
+  margin: 0 0 12px;
+  font-weight: 500;
+}
+
+/* ---------- Form CG1 and Form 11 worksheets ---------- */
+
+.cgt-form-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cgt-form-intro {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.cgt-form-lines th[scope='row'] {
+  min-width: 0;
+  max-width: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  vertical-align: top;
+}
+
+.cgt-form-lines td {
+  vertical-align: top;
+}
+
+.cgt-form-lines td:last-child {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.cgt-line-label {
+  display: block;
+}
+
+.cgt-line-note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cgt-blank-line .cgt-line-label,
+.cgt-entry-blank {
+  color: var(--text-muted);
+}
+
+.cgt-entry-text {
+  font-weight: 600;
+}
+
+.cgt-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cgt-copy {
+  padding: 2px 4px;
+}
+
+.cgt-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.cgt-list li + li {
+  margin-top: 6px;
+}
+
+.cgt-paid {
+  max-width: 220px;
+  margin-top: 12px;
+}
+
+/* the questions wrap */
+.cgt-form-lines td:nth-last-child(2) {
+  white-space: normal;
+  min-width: 220px;
+}
+
+/* on a phone each line is a block: its number, the question, then what to enter */
+@media (max-width: 575.98px) {
+  .cgt-form-lines thead {
+    display: none;
+  }
+
+  .cgt-form-lines,
+  .cgt-form-lines tbody,
+  .cgt-form-lines tr,
+  .cgt-form-lines th,
+  .cgt-form-lines td {
+    display: block;
+    width: 100%;
+  }
+
+  .cgt-form-lines tr {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cgt-form-lines tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .cgt-form-lines tbody th,
+  .cgt-form-lines td {
+    padding: 0;
+    border: 0;
+    position: static;
+  }
+
+  .cgt-form-lines td:nth-last-child(2) {
+    min-width: 0;
+  }
+
+  .cgt-form-lines td:last-child {
+    white-space: normal;
+    text-align: left;
+    margin-top: 4px;
+  }
+
+  .cgt-form-lines tbody th {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+}
+
+/* printed (or saved as PDF): the worksheet alone */
+@media print {
+  .sidebar,
+  .sidebar-backdrop,
+  .topbar,
+  .app-footer,
+  .no-print {
+    display: none !important;
+  }
+
+  .app-main {
+    margin-left: 0;
+  }
+
+  .content {
+    padding: 0;
+    max-width: none;
+  }
+
+  .cgt-form11 .section-card {
+    box-shadow: none;
+  }
+
+  .cgt-form11 tr,
+  .cgt-form11 .alert {
+    break-inside: avoid;
+  }
+
+  /* tables print whole, not in a scrolling box */
+  .cgt-form11 .table-wrap {
+    overflow: visible;
+  }
+}
+
+/* ---------- deleting a period ---------- */
+
+.cgt-years {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cgt-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cgt-period > div {
+  flex: 1 1 140px;
+}
+
+/* ---------- the price and the fees' currency (purchase form) ---------- */
+
+.cgt-price-input {
+  max-width: 240px;
+}
+
+.cgt-fee-currency {
+  flex: 0 0 96px;
+  max-width: 96px;
+}
+
+/* ---------- the purchases and sales filtered ---------- */
+
+.cgt-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* ---------- the return at the rates entered and at the ECB's ---------- */
+
+.cgt-rates-used {
+  color: var(--accent);
+}

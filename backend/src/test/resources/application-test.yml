@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:cgt-calculator-test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-0123456789
+  admin:
+    name: Test Admin
+    email: admin@example.com
+    password: admin-password
+  contact-email: admin@example.com
+  # the tests come from one address; RequestLimitsTest checks the limits
+  limits:
+    logins-per-address-per-minute: 1000
+    sign-ups-per-address-per-hour: 1000
+    reset-requests-per-address-per-hour: 1000
+    emails-per-address-per-hour: 5
+    emails-per-recipient-per-day: 1000
+  # the trades' ECB rates are looked up as they're saved; the tests don't look them up in the background as well
+  ledger:
+    ecb-rates-background: false

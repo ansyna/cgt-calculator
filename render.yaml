@@ -1,0 +1,53 @@
+# Render Blueprint: in Render choose New → Blueprint and pick this repository.
+# Creates the web app (Docker), and asks for the values marked sync: false: the database's among them (see README).
+services:
+  - type: web
+    name: cgt-calculator
+    runtime: docker
+    plan: free
+    # beside the database (Neon's AWS Europe Central 1, Frankfurt): every page's queries cross the shortest distance
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    # ready = app started and database reachable; a deploy goes live only once this answers
+    healthCheckPath: /actuator/health/readiness
+    # deploy a push to main only once GitHub's checks (the tests, the image scan) pass
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      # the database: a Postgres of its own outside Render (Render allows one free database an account, and its free
+      # databases expire), e.g. Neon's free plan: its connection details, from the Neon console's "Connect"
+      - key: DB_HOST
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSLMODE
+        value: require
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CONTACT_EMAIL
+        sync: false
+      # email for password resets, confirmations and invitations; leave empty to share links by hand
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      # error reports; leave empty to go without
+      - key: SENTRY_DSN
+        sync: false
+      # the nightly backup (.github/workflows/backup.yml) sends this to /api/backup; copy it into the GitHub
+      # secret BACKUP_TOKEN. Without it the backup endpoint is off
+      - key: BACKUP_TOKEN
+        generateValue: true

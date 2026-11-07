@@ -1,0 +1,18 @@
+# Secrets and local settings never belong in the repository: keep keys in Render's dashboard, GitHub's secrets or
+# your own shell. An example file without real values may be committed.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# editors and operating systems
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# local backups (see README: Backups)
+*.sql.gpg
+backup*.sql

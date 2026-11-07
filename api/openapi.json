@@ -1,0 +1,2646 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "description" : "The API behind the CGT Calculator pages. Log in with POST /api/auth/login and send the token as \"Authorization: Bearer <token>\".",
+    "title" : "CGT Calculator API",
+    "version" : "1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost",
+    "description" : "Generated server url"
+  } ],
+  "security" : [ {
+    "bearer" : [ ]
+  } ],
+  "paths" : {
+    "/api/activity" : {
+      "get" : {
+        "operationId" : "index_2",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 25
+          }
+        }, {
+          "in" : "query",
+          "name" : "type",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "activity-controller" ]
+      }
+    },
+    "/api/auth/email/resend" : {
+      "post" : {
+        "operationId" : "resendVerification",
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "account-controller" ]
+      }
+    },
+    "/api/auth/email/verify" : {
+      "post" : {
+        "operationId" : "verifyEmail",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TokenRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "account-controller" ]
+      }
+    },
+    "/api/auth/invitation" : {
+      "get" : {
+        "operationId" : "invitation",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "token",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/InvitationResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "account-controller" ]
+      }
+    },
+    "/api/auth/invitation/accept" : {
+      "post" : {
+        "operationId" : "acceptInvitation",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AcceptInvitation"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "account-controller" ]
+      }
+    },
+    "/api/auth/login" : {
+      "post" : {
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/auth/logout" : {
+      "post" : {
+        "operationId" : "logout",
+        "parameters" : [ {
+          "in" : "cookie",
+          "name" : "ss_refresh",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "header",
+          "name" : "X-Requested-With",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/auth/me" : {
+      "get" : {
+        "operationId" : "me",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CurrentUser"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      },
+      "put" : {
+        "operationId" : "rename",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NameRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CurrentUser"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/auth/password/forgot" : {
+      "post" : {
+        "operationId" : "forgotPassword",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ForgotRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MessageResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "account-controller" ]
+      }
+    },
+    "/api/auth/password/reset" : {
+      "post" : {
+        "operationId" : "resetPassword",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NewPasswordRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "account-controller" ]
+      }
+    },
+    "/api/auth/refresh" : {
+      "post" : {
+        "operationId" : "refresh",
+        "parameters" : [ {
+          "in" : "cookie",
+          "name" : "ss_refresh",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "header",
+          "name" : "X-Requested-With",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/auth/register" : {
+      "post" : {
+        "operationId" : "register",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AuthResponse"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/backup" : {
+      "get" : {
+        "operationId" : "download",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "X-Backup-Token",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "backup-controller" ]
+      }
+    },
+    "/api/cgt/overview" : {
+      "get" : {
+        "operationId" : "overview",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "year",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 2100,
+            "minimum" : 2000
+          }
+        }, {
+          "in" : "query",
+          "name" : "rates",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "ENTERED",
+            "enum" : [ "ENTERED", "ECB" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CgtOverview"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      }
+    },
+    "/api/cgt/settings" : {
+      "put" : {
+        "operationId" : "settings",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CgtSettingsRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      }
+    },
+    "/api/cgt/transactions" : {
+      "delete" : {
+        "operationId" : "deletePeriod",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "from",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "in" : "query",
+          "name" : "to",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CgtDeleteResult"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      },
+      "get" : {
+        "operationId" : "transactions",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/CgtTransactionDto"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      },
+      "post" : {
+        "operationId" : "create",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CgtTransactionRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CgtTransactionDto"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      }
+    },
+    "/api/cgt/transactions/import" : {
+      "post" : {
+        "operationId" : "importAll",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CgtImportRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CgtImportResult"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      }
+    },
+    "/api/cgt/transactions/{id}" : {
+      "delete" : {
+        "operationId" : "delete_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      },
+      "put" : {
+        "operationId" : "update_2",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CgtTransactionRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CgtTransactionDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "cgt-controller" ]
+      }
+    },
+    "/api/config" : {
+      "get" : {
+        "operationId" : "config",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ClientConfig"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/market/rate" : {
+      "get" : {
+        "operationId" : "rate",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "currency",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "pattern" : "[A-Za-z]{3}"
+          }
+        }, {
+          "in" : "query",
+          "name" : "date",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Rate"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "market-controller" ]
+      }
+    },
+    "/api/permissions" : {
+      "get" : {
+        "operationId" : "permissions",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PermissionDto"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "role-controller" ]
+      }
+    },
+    "/api/roles" : {
+      "get" : {
+        "operationId" : "index_1",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 5
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageDtoRoleDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "role-controller" ]
+      },
+      "post" : {
+        "operationId" : "store_1",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RoleRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RoleDto"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "role-controller" ]
+      }
+    },
+    "/api/roles/{id}" : {
+      "delete" : {
+        "operationId" : "destroy_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "role-controller" ]
+      },
+      "get" : {
+        "operationId" : "show_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RoleDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "role-controller" ]
+      },
+      "put" : {
+        "operationId" : "update_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RoleRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RoleDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "role-controller" ]
+      }
+    },
+    "/api/settings" : {
+      "get" : {
+        "operationId" : "all",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "$ref" : "#/components/schemas/JsonNode"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "settings-controller" ]
+      }
+    },
+    "/api/settings/{key}" : {
+      "delete" : {
+        "operationId" : "delete",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "key",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "settings-controller" ]
+      },
+      "put" : {
+        "operationId" : "save",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "key",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SettingRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "$ref" : "#/components/schemas/JsonNode"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "settings-controller" ]
+      }
+    },
+    "/api/users" : {
+      "get" : {
+        "operationId" : "index",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "page",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "in" : "query",
+          "name" : "size",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 5
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PageDtoUserDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      },
+      "post" : {
+        "operationId" : "store",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    },
+    "/api/users/invitations" : {
+      "post" : {
+        "operationId" : "invite",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/InviteRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LinkDto"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    },
+    "/api/users/pending" : {
+      "get" : {
+        "operationId" : "pending",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    },
+    "/api/users/{id}" : {
+      "delete" : {
+        "operationId" : "destroy",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      },
+      "get" : {
+        "operationId" : "show",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      },
+      "put" : {
+        "operationId" : "update",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    },
+    "/api/users/{id}/approve" : {
+      "post" : {
+        "operationId" : "approve",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ApproveRequest"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    },
+    "/api/users/{id}/password-reset" : {
+      "post" : {
+        "operationId" : "passwordResetLink",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LinkDto"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description" : "Error"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AcceptInvitation" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "password" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "passwordConfirmation" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "token" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "name", "password", "passwordConfirmation", "token" ]
+      },
+      "ApproveRequest" : {
+        "type" : "object",
+        "properties" : {
+          "roles" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "maxItems" : 50,
+            "minItems" : 0
+          }
+        },
+        "required" : [ "roles" ]
+      },
+      "AtRate" : {
+        "type" : "object",
+        "properties" : {
+          "amountEur" : {
+            "type" : "number"
+          },
+          "ratePercent" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "amountEur", "ratePercent" ]
+      },
+      "AuthResponse" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/CurrentUser"
+          }
+        },
+        "required" : [ "token", "user" ]
+      },
+      "CgtDeleteResult" : {
+        "type" : "object",
+        "properties" : {
+          "deleted" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "deleted" ]
+      },
+      "CgtImportRequest" : {
+        "type" : "object",
+        "properties" : {
+          "transactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CgtTransactionRequest"
+            },
+            "maxItems" : 2000,
+            "minItems" : 1
+          }
+        },
+        "required" : [ "transactions" ]
+      },
+      "CgtImportResult" : {
+        "type" : "object",
+        "properties" : {
+          "imported" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "imported" ]
+      },
+      "CgtOverview" : {
+        "type" : "object",
+        "properties" : {
+          "holdings" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Holding"
+            }
+          },
+          "lossesBefore" : {
+            "type" : "number"
+          },
+          "summary" : {
+            "$ref" : "#/components/schemas/YearSummary"
+          },
+          "years" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        },
+        "required" : [ "holdings", "lossesBefore", "summary", "years" ]
+      },
+      "CgtSettingsRequest" : {
+        "type" : "object",
+        "properties" : {
+          "lossesBefore" : {
+            "type" : "number",
+            "minimum" : 0
+          }
+        },
+        "required" : [ "lossesBefore" ]
+      },
+      "CgtTransactionDto" : {
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "type" : "string"
+          },
+          "date" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "ecbRate" : {
+            "type" : [ "number", "null" ]
+          },
+          "ecbRateDate" : {
+            "type" : [ "string", "null" ],
+            "format" : "date"
+          },
+          "enteredIn" : {
+            "type" : "string",
+            "enum" : [ "CGT" ]
+          },
+          "eurRate" : {
+            "type" : "number"
+          },
+          "eurValue" : {
+            "type" : "number"
+          },
+          "fees" : {
+            "type" : "number"
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "kind" : {
+            "type" : "string",
+            "enum" : [ "BUY", "SELL" ]
+          },
+          "name" : {
+            "type" : [ "string", "null" ]
+          },
+          "note" : {
+            "type" : [ "string", "null" ]
+          },
+          "price" : {
+            "type" : "number"
+          },
+          "quantity" : {
+            "type" : "number"
+          },
+          "source" : {
+            "type" : [ "string", "null" ],
+            "enum" : [ "BUY", "RSU", "ESPP" ]
+          },
+          "symbol" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "currency", "date", "ecbRate", "ecbRateDate", "enteredIn", "eurRate", "eurValue", "fees", "id", "kind", "name", "note", "price", "quantity", "source", "symbol" ]
+      },
+      "CgtTransactionRequest" : {
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "type" : "string",
+            "minLength" : 1,
+            "pattern" : "[A-Za-z]{3}"
+          },
+          "date" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "eurRate" : {
+            "type" : [ "number", "null" ],
+            "exclusiveMinimum" : 0,
+            "maximum" : 1000000
+          },
+          "fees" : {
+            "type" : [ "number", "null" ],
+            "minimum" : 0
+          },
+          "kind" : {
+            "type" : "string",
+            "enum" : [ "BUY", "SELL" ]
+          },
+          "note" : {
+            "type" : [ "string", "null" ],
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "price" : {
+            "type" : "number",
+            "minimum" : 0
+          },
+          "quantity" : {
+            "type" : "number",
+            "exclusiveMinimum" : 0
+          },
+          "source" : {
+            "type" : [ "string", "null" ],
+            "enum" : [ "BUY", "RSU", "ESPP" ]
+          },
+          "symbol" : {
+            "type" : "string",
+            "maxLength" : 20,
+            "minLength" : 0,
+            "pattern" : "[A-Za-z0-9.\\-]+"
+          }
+        },
+        "required" : [ "currency", "date", "eurRate", "fees", "kind", "note", "price", "quantity", "source", "symbol" ]
+      },
+      "ClientConfig" : {
+        "type" : "object",
+        "properties" : {
+          "contactEmail" : {
+            "type" : "string"
+          },
+          "mailEnabled" : {
+            "type" : "boolean"
+          },
+          "sentry" : {
+            "$ref" : "#/components/schemas/SentrySettings"
+          }
+        },
+        "required" : [ "contactEmail", "mailEnabled", "sentry" ]
+      },
+      "CurrentUser" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "emailVerified" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "permissions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "roles" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "email", "emailVerified", "id", "name", "permissions", "roles" ]
+      },
+      "Disposal" : {
+        "type" : "object",
+        "properties" : {
+          "allowableEur" : {
+            "type" : "number"
+          },
+          "costEur" : {
+            "type" : "number"
+          },
+          "date" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "feesEur" : {
+            "type" : "number"
+          },
+          "gainEur" : {
+            "type" : "number"
+          },
+          "matches" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Match"
+            }
+          },
+          "proceedsEur" : {
+            "type" : "number"
+          },
+          "quantity" : {
+            "type" : "number"
+          },
+          "ratePercent" : {
+            "type" : "number"
+          },
+          "restrictedLossEur" : {
+            "type" : "number"
+          },
+          "restrictedLossLostEur" : {
+            "type" : "number"
+          },
+          "restrictedLossUsedEur" : {
+            "type" : "number"
+          },
+          "saleId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "symbol" : {
+            "type" : "string"
+          },
+          "unmatchedQuantity" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "allowableEur", "costEur", "date", "feesEur", "gainEur", "matches", "proceedsEur", "quantity", "ratePercent", "restrictedLossEur", "restrictedLossLostEur", "restrictedLossUsedEur", "saleId", "symbol", "unmatchedQuantity" ]
+      },
+      "EntryDto" : {
+        "type" : "object",
+        "properties" : {
+          "action" : {
+            "type" : "string"
+          },
+          "actor" : {
+            "type" : "string"
+          },
+          "at" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "details" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "ip" : {
+            "type" : "string"
+          },
+          "target" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "action", "actor", "at", "details", "id", "ip", "target" ]
+      },
+      "ErrorBody" : {
+        "type" : "object",
+        "description" : "The body of every error response (4xx, 5xx).",
+        "properties" : {
+          "errors" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            },
+            "description" : "Messages per field of a form that was refused (422)."
+          },
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "message" ]
+      },
+      "ForgotRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "email" ]
+      },
+      "Form11" : {
+        "type" : "object",
+        "properties" : {
+          "currentLossesCarriedForwardEur" : {
+            "type" : "number"
+          },
+          "earlierLossesCarriedForwardEur" : {
+            "type" : "number"
+          },
+          "gainsNetOfLossesEur" : {
+            "type" : "number"
+          },
+          "initialNetGainEur" : {
+            "type" : "number"
+          },
+          "laterNetGainEur" : {
+            "type" : "number"
+          },
+          "netGainsByRate" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RateLine"
+            }
+          },
+          "sharesAcquired" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sharesAcquiredEur" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "currentLossesCarriedForwardEur", "earlierLossesCarriedForwardEur", "gainsNetOfLossesEur", "initialNetGainEur", "laterNetGainEur", "netGainsByRate", "sharesAcquired", "sharesAcquiredEur" ]
+      },
+      "Holding" : {
+        "type" : "object",
+        "properties" : {
+          "costEur" : {
+            "type" : "number"
+          },
+          "quantity" : {
+            "type" : "number"
+          },
+          "symbol" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "costEur", "quantity", "symbol" ]
+      },
+      "InvitationResponse" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "name" ]
+      },
+      "InviteRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "roles" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "maxItems" : 50,
+            "minItems" : 0
+          }
+        },
+        "required" : [ "email", "name", "roles" ]
+      },
+      "JsonNode" : {
+        "type" : "object",
+        "properties" : {
+          "array" : {
+            "type" : "boolean"
+          },
+          "bigDecimal" : {
+            "type" : "boolean"
+          },
+          "bigInteger" : {
+            "type" : "boolean"
+          },
+          "binary" : {
+            "type" : "boolean"
+          },
+          "boolean" : {
+            "type" : "boolean"
+          },
+          "container" : {
+            "type" : "boolean"
+          },
+          "double" : {
+            "type" : "boolean"
+          },
+          "embeddedValue" : {
+            "type" : "boolean"
+          },
+          "empty" : {
+            "type" : "boolean"
+          },
+          "float" : {
+            "type" : "boolean"
+          },
+          "floatingPointNumber" : {
+            "type" : "boolean"
+          },
+          "int" : {
+            "type" : "boolean"
+          },
+          "integralNumber" : {
+            "type" : "boolean"
+          },
+          "long" : {
+            "type" : "boolean"
+          },
+          "missingNode" : {
+            "type" : "boolean"
+          },
+          "nodeType" : {
+            "type" : "string",
+            "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ]
+          },
+          "null" : {
+            "type" : "boolean"
+          },
+          "number" : {
+            "type" : "boolean"
+          },
+          "object" : {
+            "type" : "boolean"
+          },
+          "pojo" : {
+            "type" : "boolean"
+          },
+          "short" : {
+            "type" : "boolean"
+          },
+          "string" : {
+            "type" : "boolean"
+          },
+          "textual" : {
+            "type" : "boolean",
+            "deprecated" : true
+          },
+          "valueNode" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "LinkDto" : {
+        "type" : "object",
+        "properties" : {
+          "emailed" : {
+            "type" : "boolean"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "url" : {
+            "type" : [ "string", "null" ]
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/UserDto"
+          }
+        },
+        "required" : [ "emailed", "path", "url", "user" ]
+      },
+      "LoginRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "password" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "email", "password" ]
+      },
+      "Match" : {
+        "type" : "object",
+        "properties" : {
+          "costEur" : {
+            "type" : "number"
+          },
+          "purchaseId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "purchased" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "quantity" : {
+            "type" : "number"
+          },
+          "rule" : {
+            "type" : "string",
+            "enum" : [ "FOUR_WEEKS", "FIRST_IN_FIRST_OUT" ]
+          }
+        },
+        "required" : [ "costEur", "purchaseId", "purchased", "quantity", "rule" ]
+      },
+      "MessageResponse" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "message" ]
+      },
+      "NameRequest" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "name" ]
+      },
+      "NewPasswordRequest" : {
+        "type" : "object",
+        "properties" : {
+          "password" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "passwordConfirmation" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "token" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "password", "passwordConfirmation", "token" ]
+      },
+      "PageDto" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EntryDto"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "content", "page", "size", "totalElements", "totalPages" ]
+      },
+      "PageDtoRoleDto" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RoleDto"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "content", "page", "size", "totalElements", "totalPages" ]
+      },
+      "PageDtoUserDto" : {
+        "type" : "object",
+        "properties" : {
+          "content" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UserDto"
+            }
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "size" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "content", "page", "size", "totalElements", "totalPages" ]
+      },
+      "Period" : {
+        "type" : "object",
+        "properties" : {
+          "gainsEur" : {
+            "type" : "number"
+          },
+          "lossesEur" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "gainsEur", "lossesEur" ]
+      },
+      "PermissionDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ]
+      },
+      "Rate" : {
+        "type" : "object",
+        "properties" : {
+          "date" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "rate" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "date", "rate" ]
+      },
+      "RateLine" : {
+        "type" : "object",
+        "properties" : {
+          "initialNetGainEur" : {
+            "type" : "number"
+          },
+          "laterNetGainEur" : {
+            "type" : "number"
+          },
+          "ratePercent" : {
+            "type" : "number"
+          }
+        },
+        "required" : [ "initialNetGainEur", "laterNetGainEur", "ratePercent" ]
+      },
+      "RegisterRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "password" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "passwordConfirmation" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "email", "name", "password", "passwordConfirmation" ]
+      },
+      "RoleDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "permissions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PermissionDto"
+            }
+          }
+        },
+        "required" : [ "id", "name", "permissions" ]
+      },
+      "RoleRequest" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "permission" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            },
+            "maxItems" : 500,
+            "minItems" : 0
+          }
+        },
+        "required" : [ "name", "permission" ]
+      },
+      "SentrySettings" : {
+        "type" : "object",
+        "properties" : {
+          "dsn" : {
+            "type" : "string"
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "release" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "dsn", "environment", "release" ]
+      },
+      "SettingRequest" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "anyOf" : [ {
+              "$ref" : "#/components/schemas/JsonNode"
+            }, {
+              "type" : "null"
+            } ]
+          }
+        },
+        "required" : [ "value" ]
+      },
+      "TokenRequest" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "token" ]
+      },
+      "UserDto" : {
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "emailVerified" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "invitationPending" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "roles" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "createdAt", "email", "emailVerified", "id", "invitationPending", "name", "roles" ]
+      },
+      "UserRequest" : {
+        "type" : "object",
+        "properties" : {
+          "confirmPassword" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "password" : {
+            "type" : "string",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "roles" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "maxItems" : 50,
+            "minItems" : 0
+          }
+        },
+        "required" : [ "confirmPassword", "email", "name", "password", "roles" ]
+      },
+      "YearSummary" : {
+        "type" : "object",
+        "properties" : {
+          "chargeableGainEur" : {
+            "type" : "number"
+          },
+          "considerationEur" : {
+            "type" : "number"
+          },
+          "disposalCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "disposals" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Disposal"
+            }
+          },
+          "exemptionEur" : {
+            "type" : "number"
+          },
+          "form11" : {
+            "$ref" : "#/components/schemas/Form11"
+          },
+          "gainsByRate" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AtRate"
+            }
+          },
+          "gainsEur" : {
+            "type" : "number"
+          },
+          "initialDue" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "initialPaymentEur" : {
+            "type" : "number"
+          },
+          "initialPeriod" : {
+            "$ref" : "#/components/schemas/Period"
+          },
+          "laterDue" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "laterPaymentEur" : {
+            "type" : "number"
+          },
+          "laterPeriod" : {
+            "$ref" : "#/components/schemas/Period"
+          },
+          "lossesBroughtForwardEur" : {
+            "type" : "number"
+          },
+          "lossesCarriedForwardEur" : {
+            "type" : "number"
+          },
+          "lossesEur" : {
+            "type" : "number"
+          },
+          "lossesUsedEur" : {
+            "type" : "number"
+          },
+          "problems" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "returnDue" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "taxEur" : {
+            "type" : "number"
+          },
+          "taxableGainEur" : {
+            "type" : "number"
+          },
+          "year" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "required" : [ "chargeableGainEur", "considerationEur", "disposalCount", "disposals", "exemptionEur", "form11", "gainsByRate", "gainsEur", "initialDue", "initialPaymentEur", "initialPeriod", "laterDue", "laterPaymentEur", "laterPeriod", "lossesBroughtForwardEur", "lossesCarriedForwardEur", "lossesEur", "lossesUsedEur", "problems", "returnDue", "taxEur", "taxableGainEur", "year" ]
+      }
+    },
+    "securitySchemes" : {
+      "bearer" : {
+        "bearerFormat" : "JWT",
+        "scheme" : "bearer",
+        "type" : "http"
+      }
+    }
+  }
+}

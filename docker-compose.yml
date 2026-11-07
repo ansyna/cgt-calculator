@@ -1,0 +1,39 @@
+# Local production-like stack: the app (frontend + backend) and Postgres.
+#   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=choose-one docker compose up --build
+# Then open http://localhost:8080
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      DB_HOST: db
+      DB_NAME: cgtcalculator
+      DB_USER: cgtcalculator
+      DB_PASSWORD: cgtcalculator
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-}
+      # empty: a random secret each start (log in again after a restart)
+      JWT_SECRET: ${JWT_SECRET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 512m
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cgtcalculator
+      POSTGRES_USER: cgtcalculator
+      POSTGRES_PASSWORD: cgtcalculator
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cgtcalculator -d cgtcalculator"]
+      interval: 2s
+      retries: 30
+
+volumes:
+  db-data:

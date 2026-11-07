@@ -1,0 +1,235 @@
+# Runs the tests on every push and pull request: the backend (including the migrations on a real Postgres), the backend's tests again with the app on Postgres, the frontend component tests, the browser tests on
+# desktop and phone, and the Docker image Render deploys, scanned for known vulnerabilities. Render deploys a
+# push to main only when all of these pass (render.yaml: autoDeployTrigger). Actions are pinned to a commit
+# (Renovate keeps them current).
+#
+# To save Actions minutes, a job runs only when what it tests changed (the "What changed" job works it out; a
+# skipped job counts as passed): the backend's for the backend and the API description, the frontend's and the
+# browser tests for the frontend, the image for what it's built from (its Dockerfile, the backend's and frontend's
+# dependencies). This file changing runs them all, as does a run by hand. Changes to Markdown alone run nothing.
+# The weekly Security workflow rebuilds and scans the image whatever changed.
+name: Tests
+
+on:
+  push:
+    paths-ignore: ["**/*.md"]
+  pull_request:
+    paths-ignore: ["**/*.md"]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: What changed
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.paths.outputs.backend }}
+      frontend: ${{ steps.paths.outputs.frontend }}
+      docker: ${{ steps.paths.outputs.docker }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          fetch-depth: 0
+      - name: Which parts the push or pull request changed
+        id: paths
+        env:
+          # what it's compared with: the branch before the push, or the pull request's base
+          BEFORE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          # a new branch, a run by hand or history not found: everything runs
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] || [ -z "$BEFORE" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ] \
+            || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            files=".github/workflows/ci.yml"
+          else
+            files=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
+          fi
+          echo "Changed:"; echo "$files"
+          changed() { echo "$files" | grep -qE "$1" && echo true || echo false; }
+          all='^\.github/workflows/ci\.yml$'
+          echo "backend=$(changed "$all|^backend/|^api/")" >> "$GITHUB_OUTPUT"
+          echo "frontend=$(changed "$all|^frontend/|^api/")" >> "$GITHUB_OUTPUT"
+          echo "docker=$(changed "$all|^Dockerfile$|^\.dockerignore$|^\.trivyignore$|^backend/pom\.xml$|^frontend/package(-lock)?\.json$")" >> "$GITHUB_OUTPUT"
+
+  backend:
+    name: Backend
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      # throwaway databases for MigrationTest (only reachable inside this job)
+      TEST_POSTGRES_URL: jdbc:postgresql://localhost:5432/postgres
+      TEST_POSTGRES_USER: postgres
+      TEST_POSTGRES_PASSWORD: postgres
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Run tests
+        run: mvn -B -ntp verify
+      - name: Keep test reports
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports
+          retention-days: 7
+
+  # The same tests with the app on Postgres, as on Render, instead of H2: what H2 lets through and Postgres refuses
+  # (an insert in a read-only transaction, say) fails here.
+  backend-postgres:
+    name: Backend on Postgres
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      # each test context keeps its own connections: a few each stay under Postgres's 100
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "3"
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Run tests
+        run: mvn -B -ntp test
+      - name: Keep test reports
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: backend-postgres-test-reports
+          path: backend/target/surefire-reports
+          retention-days: 7
+
+  frontend:
+    name: Frontend
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: No known vulnerabilities in what ships to browsers
+        run: npm audit --omit=dev --audit-level=high
+      - name: API types match api/openapi.json
+        run: |
+          npm run api:types
+          git diff --exit-code -- src/generated/api.ts || { echo "::error::src/generated/api.ts is out of date: run npm run api:types"; exit 1; }
+      - name: Type check
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Component tests
+        run: npm test
+
+  browser:
+    name: Browser tests
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Desktop and phone
+        run: npm run test:e2e
+      - name: Keep the failure traces
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7
+
+  docker:
+    name: Docker image
+    needs: changes
+    if: needs.changes.outputs.docker == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Build the image Render deploys
+        run: docker build -t cgt-calculator .
+      - name: List what the image contains (SBOM)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: cgt-calculator
+          format: cyclonedx
+          output: sbom.cdx.json
+      - name: Keep the SBOM
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: sbom
+          path: sbom.cdx.json
+          retention-days: 30
+      # the operating system packages and the Java libraries in the image; only problems a newer version fixes
+      # fail the check (and so the deploy). Accepted exceptions go in .trivyignore with a reason
+      - name: No known high or critical vulnerabilities in the image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: cgt-calculator
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          skip-setup-trivy: true
