@@ -14,6 +14,9 @@ how it relates to Finance Toolkit (`ansyna/stock-screener-app`). `README.md` has
   Never hand the owner a `localhost` address or a made-up login. To show a change before it's deployed, take
   screenshots against the mock API (CONTEXT.md). A local server only when the owner asks for one in so many words.
 - **Commit and push to `main`**, even if the session was started on a branch of its own: Render deploys only `main`.
+  Start by bringing the checkout onto it (`git fetch origin main && git checkout main && git pull origin main`).
+  Whether something is on `main`, or still to push, is told against `origin/main` after a fetch
+  (`git log origin/main..HEAD`), never against a branch of the session's own.
 - **Never put the user's real data in the repository.** Tests, fixtures, mock APIs, examples, placeholders, comments
   and docs use invented names, amounts, dates, descriptions and providers. This holds even when a test copies the
   layout of a screenshot, statement or export the user shared: copy its shape (columns, formats, quirks), never its
