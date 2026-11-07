@@ -67,9 +67,19 @@ effect's arrow takes a block body; Vitest page tests through `renderApp` and `lo
 browser tests against `e2e/mockApi.ts` on desktop and phone; a new Flyway migration in `MigrationTest`'s list, and
 none edited once applied; `api/openapi.json` and the TypeScript types regenerated after an API change.
 
+## Where the app runs
+
+The app runs on Render, and only there; a session doesn't run it itself, on Render or locally, unless asked. A
+change reaches the site like this: commit once every check passes, push when the owner says "push", watch `Tests`
+to the end (`gh run list -R ansyna/cgt-calculator -L 1`, then `gh run watch <id> -R ansyna/cgt-calculator
+--exit-status`; red is the session's to fix), and Render deploys `main` by itself once it passes. Markdown alone runs
+no tests and deploys nothing. The session can't reach the live site or Render's dashboard: the owner checks the site,
+and when it misbehaves, ask them what Render's dashboard shows and guide them through it on a phone. To show a
+change before it's deployed, use screenshots against the mock API, not a local server.
+
 ## Seeing the app, and where the rules live
 
-- The real app locally (README → Running locally): the backend with `mvn -q -o spring-boot:run` in `backend/` (H2 by
+- Only if the owner asks for it, the real app locally (README → Running locally): the backend with `mvn -q -o spring-boot:run` in `backend/` (H2 by
   default) and `npx vite` in `frontend/` (http://localhost:5173, `/api` passed to :8080). The first start needs an
   admin: set `ADMIN_EMAIL` and `ADMIN_PASSWORD` to invented ones, never the owner's. Without `JWT_SECRET` a restart
   logs everyone out. The Vite proxy keeps the browser's Host header (`changeOrigin: false`): with Vite's short form
