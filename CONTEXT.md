@@ -69,6 +69,12 @@ none edited once applied; `api/openapi.json` and the TypeScript types regenerate
 
 ## Seeing the app, and where the rules live
 
+- The real app locally (README → Running locally): the backend with `mvn -q -o spring-boot:run` in `backend/` (H2 by
+  default) and `npx vite` in `frontend/` (http://localhost:5173, `/api` passed to :8080). The first start needs an
+  admin: set `ADMIN_EMAIL` and `ADMIN_PASSWORD` to invented ones, never the owner's. Without `JWT_SECRET` a restart
+  logs everyone out. The Vite proxy keeps the browser's Host header (`changeOrigin: false`): with Vite's short form
+  the API refused the login with 403.
+
 - Browser tests build the app and serve it on port 4173 with every API call answered by `e2e/mockApi.ts`. To show a
   page to the owner, write a throwaway spec there that calls the mock, takes `page.screenshot()` (at
   `deviceScaleFactor: 2`, desktop and phone), send the images and delete the spec.
