@@ -112,3 +112,8 @@ change before it's deployed, use screenshots against the mock API, not a local s
 - All checks pass on `main`; the history is one commit; `main` is the only branch.
 - Its two scheduled backups so far (1 and 2 November) failed: worth a look if backups matter here (the run's log
   says why; most likely a secret not set in the repository's settings).
+- Open follow-up from the 7 November clean-up (the history squashed to remove real data): the old commits can still be
+  opened on GitHub by their id until GitHub cleans up, and the repository is public. The owner may ask GitHub Support
+  (support.github.com/request) to purge cached views and garbage-collect.
+- A session's git access may push to `main` but was refused deleting branches (403): say so and ask the owner to do it
+  on GitHub; don't look for a way round.
