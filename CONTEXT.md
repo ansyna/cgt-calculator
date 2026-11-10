@@ -96,7 +96,10 @@ change before it's deployed, use screenshots against the mock API, not a local s
   return's due date), the matching in `CgtCalculator`, the Form 11 and CG1 lines in the frontend's `apps/cgt/pages`.
   Budget day (October) can change them: check each year.
 - Lessons from Finance Toolkit apply here too (its `CONTEXT.md` → Lessons learned), above all: never edit an applied
-  migration, block bodies in effects, a percent field's `max` in percent.
+  migration, block bodies in effects, a percent field's `max` in percent, and the rule for importers: only an exact,
+  known value is read silently, anything matched loosely, defaulted or converted is shown to check, and an amount is
+  never changed without saying so. Before committing an import change, try it in a throwaway test with exports you
+  didn't write it for (other column names, number and date formats, totals, blank lines).
 
 ## Deploying and operating
 
