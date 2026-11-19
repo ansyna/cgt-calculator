@@ -3,7 +3,7 @@
 [![Tests](https://github.com/ansyna/cgt-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/ansyna/cgt-calculator/actions/workflows/ci.yml)
 
 Irish capital gains tax on shares, for Form CG1 or Form 11: a web app (Spring Boot and React) where each person
-records their purchases and sales, or imports them from a broker's CSV statement, and gets each tax year's CGT worked
+records their purchases and sales, or imports them from a broker's CSV or Excel statement, and gets each tax year's CGT worked
 out, with the figures for the return.
 
 ## What it works out
@@ -35,7 +35,7 @@ Both worksheets work the return out at the rate each trade was entered with or, 
 day", at the ECB's reference rate of each trade's day, as Revenue converts at the rate of the day bought or sold. The
 year's totals and each sale's figures are shown at both rates side by side.
 
-**Importing a statement** ("Import a statement"): the CSV file is read in the browser. Fidelity's account history and
+**Importing a statement** ("Import a statement"): the CSV or Excel (.xlsx) file is read in the browser. Fidelity's account history and
 stock plan account history are recognised by their column names; for other layouts the columns are picked. The stock
 plan history names companies, so each company's ticker is asked once and remembered, and its prices come from the
 amounts. An RSU vest has no price on the statement and an ESPP purchase shows the discounted price paid: for both, the

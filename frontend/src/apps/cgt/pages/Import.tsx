@@ -5,7 +5,8 @@ import { api, ApiError } from '../../../platform/api';
 import SectionCard from '../../../platform/components/SectionCard';
 import StatementColumns from '../../../platform/components/StatementColumns';
 import StatementTickers from '../../../platform/components/StatementTickers';
-import { AWARD_HISTORY, LAYOUT_NOTES, readText, savedTickers, withTicker } from '../../../platform/statement';
+import { readAsCsv, SPREADSHEET_ACCEPT } from '../../../platform/sheets';
+import { AWARD_HISTORY, LAYOUT_NOTES, savedTickers, withTicker } from '../../../platform/statement';
 import { shares, shortDate, type Transaction } from '../cgt';
 import {
   guessMapping,
@@ -191,10 +192,18 @@ export default function Import() {
       setReadError('That file is over 5 MB: export a shorter period.');
       return;
     }
-    const table = readCsv(await readText(chosen));
+    let text: string;
+    try {
+      text = await readAsCsv(chosen, 'a statement');
+    } catch (e) {
+      setFile(null);
+      setReadError(e instanceof Error ? e.message : 'That file can’t be read.');
+      return;
+    }
+    const table = readCsv(text);
     if (table.rows.length === 0) {
       setFile(null);
-      setReadError("No rows found: is it the CSV export of your statement (not the PDF)?");
+      setReadError("No rows found: is it the CSV or Excel export of your statement (not the PDF)?");
       return;
     }
     const guess = guessMapping(table);
@@ -304,9 +313,9 @@ export default function Import() {
 
       <SectionCard title="Choose the file">
         <label htmlFor="import-file" className="form-label">
-          CSV statement
+          CSV or Excel statement
         </label>
-        <input id="import-file" type="file" accept=".csv,text/csv" className="form-control" onChange={choose} />
+        <input id="import-file" type="file" accept={SPREADSHEET_ACCEPT} className="form-control" onChange={choose} />
         <p className="cgt-note">
           In Fidelity, open your account's activity or history and download it as CSV; for shares from your employer (RSUs,
           ESPP), download the stock plan account's transaction history, not the award history. Take the whole period since

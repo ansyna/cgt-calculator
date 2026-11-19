@@ -41,7 +41,7 @@ test.describe('the calculator', () => {
   test('records a purchase typed in, at the ECB rate of the day', async ({ page }) => {
     const api = await mockApi(page);
     await page.goto('/cgt/transactions');
-    await page.getByLabel('Date').fill('2025-09-17');
+    await page.getByLabel('Date', { exact: true }).fill('2025-09-17');
     await page.getByLabel('Ticker').fill('acme');
     await page.getByLabel('Shares').fill('10');
     await page.getByLabel('Currency', { exact: true }).selectOption('USD');

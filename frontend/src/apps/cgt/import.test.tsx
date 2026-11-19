@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { INVESTOR, loggedInAs, renderApp } from '../../test/helpers';
+import { workbook } from '../../test/workbook';
 import type { Transaction } from './cgt';
 
 beforeEach(() => vi.stubGlobal('matchMedia', () => ({ matches: false })));
@@ -34,7 +35,7 @@ function server(options: { existing?: Transaction[]; importAnswers?: { status: n
 }
 
 function choose(text: string, name = 'Accounts_History.csv') {
-  const input = screen.getByLabelText('CSV statement');
+  const input = screen.getByLabelText('CSV or Excel statement');
   fireEvent.change(input, { target: { files: [new File([text], name, { type: 'text/csv' })] } });
 }
 
@@ -74,6 +75,33 @@ describe('CGT calculator: importing a statement', () => {
       },
     ]);
     expect(screen.queryByRole('table')).toBeNull();
+  });
+
+  it("reads the same export saved as Excel, its dates as date cells", async () => {
+    const { sent } = server();
+    renderApp('/cgt/import');
+    await screen.findByRole('heading', { level: 1, name: 'Import a statement' });
+    // Excel's day number for a US date (MM/DD/YYYY)
+    const serial = (us: string) => {
+      const [m, d, y] = us.split('/').map(Number);
+      return (Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 86_400_000;
+    };
+    const rows = FIDELITY.trim()
+      .split('\n')
+      .map((line) => line.split(',').map((cell, i) => (cell === '' ? null : /^\d\d\/\d\d\/\d{4}$/.test(cell) && (i === 0 || i === 11) ? serial(cell) : /^-?[\d.]+$/.test(cell) ? Number(cell) : cell)));
+    const data = await workbook({ History: rows });
+    fireEvent.change(screen.getByLabelText('CSV or Excel statement'), { target: { files: [new File([data], 'Accounts_History.xlsx')] } });
+    await screen.findByText("Read as Fidelity's account history", { exact: false });
+    const preview = within(screen.getByRole('table'));
+    fireEvent.change(await preview.findByLabelText('Price a share on line 7 (USD)'), { target: { value: '101,50' } });
+    fireEvent.change(preview.getByLabelText('Price a share on line 6 (USD)'), { target: { value: '112' } });
+    fireEvent.click(importButton());
+    await screen.findByText(/3 transactions imported/);
+    expect(sent[0].transactions.map((t) => [t.kind, t.date, t.quantity, t.price])).toEqual([
+      ['SELL', '2025-09-17', 10, 117.12],
+      ['BUY', '2025-08-15', 25, 112],
+      ['BUY', '2025-06-02', 40, 101.5],
+    ]);
   });
 
   it('leaves out rows already recorded, and any row on request', async () => {
