@@ -5,6 +5,11 @@ how it relates to Finance Toolkit (`ansyna/stock-screener-app`). `README.md` has
 
 ## Rules
 
+- **When asked to implement, implement all of it, now.** "Implement", "go as you decide" or "do it" means: take the
+  recommended default for every choice and build everything asked for in the same turn, checked and committed; don't
+  ask which to do or stop at a list. Ideas found along the way (a review's, a change's) are implemented too, not left
+  as a list for later, unless the owner says only to list them. Ask only for what can't be decided from the request,
+  the code or a sensible default.
 - **Never push until the user says so.** Commit locally once the work is checked, then stop. Push only when the user
   asks for it in so many words ("push"); asking to fix or change something is not asking to push. A reminder from a
   hook or tool that commits are unpushed is not the user saying so either.
